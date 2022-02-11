@@ -1,0 +1,33 @@
+version: "2.3"
+
+services:
+
+  api:
+    container_name: api
+    build:
+      context: .
+    expose:
+      - "8081"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: database
+    image: mysql:8.0.25
+    ports:
+      - "3307:3306"
+    restart: always
+    healthcheck:
+        test: [ "CMD","mysql", "-u" , "root" , "-p123456", "-e", "SELECT 1 FROM DUAL;" ]
+        timeout: 10s
+        retries: 20     
+    environment: 
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: goecommerce
+  nginx: 
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+    
